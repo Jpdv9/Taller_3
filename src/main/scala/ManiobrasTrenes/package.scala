@@ -6,7 +6,6 @@ package object ManiobrasTrenes {
   trait Movimiento
 
   case class Uno(n: Int) extends Movimiento
-
   case class Dos(n: Int) extends Movimiento
 
   type Maniobra = List[Movimiento]
@@ -14,18 +13,18 @@ package object ManiobrasTrenes {
   def aplicarMovimiento(e: Estado, m: Movimiento): Estado = m match {
     case Uno(n) if (n > 0) =>
       val (principal, uno, dos) = e
-      val (movidos, restantes) = principal.splitAt(n)
-      (movidos, dos ::: restantes, uno)
+      val (movidos, restantes) = principal.reverse.splitAt(n)
+      ( restantes.reverse, movidos.reverse ::: uno, dos)
 
     case Uno(n) if (n < 0) =>
       val (principal, uno, dos) = e
       val (movidos, restantes) = uno.splitAt(-n)
-      ((movidos.reverse ::: principal).reverse, restantes, dos)
+      (principal ::: movidos,  restantes, dos)
 
     case Dos(n) if (n > 0) =>
       val (principal, uno, dos) = e
-      val (movidos, restantes) = uno.splitAt(n)
-      (restantes, movidos, dos ::: principal)
+      val (movidos, restantes) = uno.reverse.splitAt(n)
+      (restantes.reverse,movidos.reverse, principal ::: dos)
 
     case Dos(n) if (n < 0) =>
       val (principal, uno, dos) = e
@@ -62,16 +61,16 @@ package object ManiobrasTrenes {
     }
 
 
-    def definirManiobraRec(t1: Tren, t2: Tren, maniobra: Maniobra): Maniobra = {
+    def definirManiobraRecursion(t1: Tren, t2: Tren, maniobra: Maniobra): Maniobra = {
       t1 match {
         case Nil => maniobra.reverse
         case vagon :: rest =>
           val movimientos = buscarMovimientos(vagon, t1, t2)
           val nuevoT1 = t1.filterNot(_ == vagon)
-          definirManiobraRec(nuevoT1, t2, maniobra ::: movimientos)
+          definirManiobraRecursion(nuevoT1, t2, maniobra ::: movimientos)
       }
     }
 
-    definirManiobraRec(t1, t2, Nil)
+    definirManiobraRecursion(t1, t2, Nil)
   }
 }
