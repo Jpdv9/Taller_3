@@ -23,8 +23,8 @@ package object ManiobrasTrenes {
 
     case Dos(n) if (n > 0) =>
       val (principal, uno, dos) = e
-      val (movidos, restantes) = uno.reverse.splitAt(n)
-      (restantes.reverse,movidos.reverse, principal ::: dos)
+      val (movidos, restantes) = principal.splitAt(n)
+      (restantes,uno, movidos ::: dos)
 
     case Dos(n) if (n < 0) =>
       val (principal, uno, dos) = e
